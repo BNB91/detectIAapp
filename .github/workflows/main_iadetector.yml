@@ -14,15 +14,15 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up Python version
-        uses: actions/setup-python@v2  # Utilisez la version la plus récente
+        uses: actions/setup-python@v2
         with:
           python-version: '3.11'
 
       - name: Create and start virtual environment
         run: |
           python -m venv venv
-          source venv/bin/activate
-
+          ./venv/bin/activate
+      
       - name: Install dependencies
         run: pip install -r requirements.txt
 
@@ -35,7 +35,7 @@ jobs:
           name: python-app
           path: |
             release.zip
-            !venv/
+            ./venv/
 
   deploy:
     runs-on: ubuntu-latest
