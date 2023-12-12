@@ -11,10 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Python version
-        uses: actions/setup-python@v2.3.0
+        uses: actions/setup-python@v2
         with:
           python-version: '3.11'
 
@@ -29,7 +30,8 @@ jobs:
     needs: build
     environment:
       name: 'Production'
-
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
@@ -37,16 +39,11 @@ jobs:
           name: python-app
 
       - name: Unzip artifact for deployment
-        run: unzip release.zip
+        run: unzip python-app.zip
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
-        id: deploy-to-webapp
         with:
           app-name: 'iaDetector'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E9E824FE488D4771BEE53044CD9AF233 }}
-
-      # Ajouter cette étape pour écrire les informations dans un fichier d'environnement
-      - name: Write environment file
-        run: echo "WEBAPP_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_ENV
